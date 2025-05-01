@@ -1,2 +1,7 @@
 from .collaborative_filtering_recommender import CF_Recommender
 from .llm_recommender import LLM_Recommender
+from .random_recommender import Random_Recommender
+from .static_recommender import Static_Recommender
+from .bpr_recommender import BPR_Recommender
+from .fm_recommender import FM_Recommender
+from .ncf_recommender import NCF_Recommender, NCF_Recommender_GNNemb

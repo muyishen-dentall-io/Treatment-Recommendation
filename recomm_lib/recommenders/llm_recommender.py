@@ -123,7 +123,7 @@ class LLM_Recommender(Recommender):
             log("🧾 Average completion_tokens: {:.2f}".format(self.completion_tokens / total_users))
             log("👥 Total Users: {}".format(total_users))
 
-        with open("data/{}_{}_predict.json".format(self.llm_model, self.mode), "w", encoding="utf-8") as f:
+        with open("results/{}_{}_predict.json".format(self.llm_model, self.mode), "w", encoding="utf-8") as f:
             json.dump(predict_dict, f, ensure_ascii=False, indent=2)
     
     

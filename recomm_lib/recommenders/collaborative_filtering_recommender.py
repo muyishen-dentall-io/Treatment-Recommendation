@@ -2,13 +2,15 @@ from .base import Recommender
 import numpy as np
 from scipy.sparse import coo_matrix
 from implicit.als import AlternatingLeastSquares
+import os
 
 class CF_Recommender(Recommender):
     
     def __init__(self, args):
         
         self.args = args
-        
+        self.SAVE_PATH = 'results/CF_Recommender/'
+
         return
     
     def train(self, train_df):
@@ -81,7 +83,10 @@ class CF_Recommender(Recommender):
         hit_rate = hit_total / total_users if total_users > 0 else 0
                 
         mrr = mrr_total / total_users if total_users > 0 else 0
-        with open("results/CF_Recommender.txt", "w", encoding="utf-8") as f:
+        
+        os.makedirs(self.SAVE_PATH, exist_ok=True)
+        
+        with open(self.SAVE_PATH + "CF_Recommender_top{}.txt".format(top_k), "w", encoding="utf-8") as f:
             def log(msg):
                 print(msg)
                 f.write(msg + "\n")

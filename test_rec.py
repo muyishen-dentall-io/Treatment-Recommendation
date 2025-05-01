@@ -2,6 +2,31 @@ import recomm_lib
 import pdb
 from types import SimpleNamespace
 import pandas as pd
+import random
+import numpy as np
+import torch
+from recomm_lib import (
+    CF_Recommender,
+    LLM_Recommender,
+    Random_Recommender,
+    Static_Recommender,
+    BPR_Recommender,
+    FM_Recommender,
+    NCF_Recommender,
+    NCF_Recommender_GNNemb,
+)
+
+def set_seed(seed):
+    random.seed(seed)
+    np.random.seed(seed)
+    torch.manual_seed(seed)
+    torch.cuda.manual_seed(seed)  # if using GPU
+    torch.cuda.manual_seed_all(seed)
+    torch.backends.cudnn.deterministic = True
+    torch.backends.cudnn.benchmark = False
+
+# -----------------------------------------------
+# Split data into training and validation
 
 # DB_PATH = "patients.db"
 
@@ -15,19 +40,66 @@ import pandas as pd
 # train_df.to_csv('data/train_df.csv')
 # val_df.to_csv('data/val_df.csv')
 
-train_df = pd.read_csv('data/train_df.csv')
-val_df = pd.read_csv('data/val_df.csv')
+# -----------------------------------------------
 
-# args = SimpleNamespace(SEED=42, NUM_FACTORS = 32, NUM_ITER = 20, REGULARIZATION = 0.1, ALPHA = 50)
 
-# recommender = recomm_lib.CF_Recommender(args)
-# recommender = recomm_lib.LLM_Recommender(mode='note')
-# recommender = recomm_lib.LLM_Recommender(mode='treatment')
-recommender = recomm_lib.LLM_Recommender(mode='all')
+train_df = pd.read_csv('data/train_df_w_info.csv')
+val_df = pd.read_csv('data/val_df_w_info.csv')
 
-train_df = recommender.user_item2idx(train_df, "user_id", "item")
+recommender_configs = [
+    # {
+    #     "name": "CF_Recommender",
+    #     "recommender": CF_Recommender(
+    #         SimpleNamespace(SEED=42, NUM_FACTORS=32, NUM_ITER=100, REGULARIZATION=0.1, ALPHA=20)
+    #     )
+    # },
+    # {"name": "LLM_Recommender_note", "recommender": LLM_Recommender(mode="note")},
+    # {"name": "LLM_Recommender_treatment", "recommender": LLM_Recommender(mode="treatment")},
+    # {"name": "LLM_Recommender_all", "recommender": LLM_Recommender(mode="all")},
+    # {"name": "Random_Recommender", "recommender": Random_Recommender()},
+    # {"name": "Static_Recommender", "recommender": Static_Recommender()},
+    # {
+    #     "name": "BPR_Recommender",
+    #     "recommender": BPR_Recommender(
+    #         SimpleNamespace(SEED=42, NUM_FACTORS=64, NUM_ITER=50, REGULARIZATION=0.01)
+    #     ),
+    # },
+    # {
+    #     "name": "FM_Recommender",
+    #     "recommender": FM_Recommender(
+    #         SimpleNamespace(SEED=42, NUM_FACTORS=32, NUM_ITER=400, REGULARIZATION=0.01)
+    #     ),
+    # },
+    # {
+    #     "name": "NCF_Recommender",
+    #     "recommender": NCF_Recommender(
+    #         SimpleNamespace(NUM_EPOCHS=5, NEG_PER_USER=20, EMBED_DIM=128, BATCH_SIZE=128, LR=1e-3, SEED=42)
+    #     ),
+    # },
+    {
+        "name": "NCF_Recommender_GNNemb",
+        "recommender": NCF_Recommender_GNNemb(
+            SimpleNamespace(NUM_EPOCHS=8, NEG_PER_USER=20, EMBED_DIM=128, BATCH_SIZE=128, LR=1e-3, SEED=42)
+        ),
+    }
+]
 
-recommender.train(train_df)
 
-recommender.evaluate(val_df, top_k=5)
+top_k_list = [1, 3, 5]
+
+for config in recommender_configs:
+    recommender_name = config["name"]
+    recommender = config["recommender"]
+
+    print(f"\n=== Training {recommender_name} ===")
+
+    train_data = recommender.user_item2idx(train_df.copy(), "user_id", "item")
+
+    set_seed(42)
+
+    recommender.train(train_data)
+
+    print(f"--- Evaluating {recommender_name} ---")
+    for top_k in top_k_list:
+        recommender.evaluate(val_df, top_k=top_k)
 

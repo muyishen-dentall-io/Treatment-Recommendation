@@ -1,2 +1,6 @@
 /depracated
 /results
+/data/gnn_embeddings
+/cache
+/presentation
+__pycache__
