@@ -14,6 +14,7 @@ from recomm_lib import (
     FM_Recommender,
     NCF_Recommender,
     NCF_Recommender_GNNemb,
+    Next_Prediction_Recommender
 )
 
 def set_seed(seed):
@@ -76,10 +77,26 @@ recommender_configs = [
     #         SimpleNamespace(NUM_EPOCHS=5, NEG_PER_USER=20, EMBED_DIM=128, BATCH_SIZE=128, LR=1e-3, SEED=42)
     #     ),
     # },
+    # {
+    #     "name": "NCF_Recommender_GNNemb",
+    #     "recommender": NCF_Recommender_GNNemb(
+    #         SimpleNamespace(NUM_EPOCHS=8, NEG_PER_USER=20, EMBED_DIM=128, BATCH_SIZE=128, LR=1e-3, SEED=42)
+    #     ),
+    # }
     {
-        "name": "NCF_Recommender_GNNemb",
-        "recommender": NCF_Recommender_GNNemb(
-            SimpleNamespace(NUM_EPOCHS=8, NEG_PER_USER=20, EMBED_DIM=128, BATCH_SIZE=128, LR=1e-3, SEED=42)
+        "name": "Next_Prediction_Recommender",
+        "recommender": Next_Prediction_Recommender(
+            SimpleNamespace(
+                BATCH_SIZE=128,
+                EMBED_DIM=128,
+                NUM_HEADS=2,
+                NUM_LAYERS=1,
+                DROPOUT=0.1,
+                LR=1e-4,
+                NUM_EPOCHS=6,
+                MAX_SEQ_LEN=8,
+                DECAY_ALPHA=1.0
+            )
         ),
     }
 ]
