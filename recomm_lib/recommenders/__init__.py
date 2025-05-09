@@ -5,4 +5,5 @@ from .static_recommender import Static_Recommender
 from .bpr_recommender import BPR_Recommender
 from .fm_recommender import FM_Recommender
 from .ncf_recommender import NCF_Recommender, NCF_Recommender_GNNemb
-from .next_prediction_recommender import Next_Prediction_Recommender
+from .next_prediction_recommender import Next_Prediction_Recommender, TransformerNextItemPredictor
+from .transformer_recommender import TransformerRecommender

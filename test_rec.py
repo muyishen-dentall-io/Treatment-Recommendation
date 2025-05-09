@@ -14,7 +14,8 @@ from recomm_lib import (
     FM_Recommender,
     NCF_Recommender,
     NCF_Recommender_GNNemb,
-    Next_Prediction_Recommender
+    Next_Prediction_Recommender,
+    TransformerRecommender
 )
 
 def set_seed(seed):
@@ -43,9 +44,12 @@ def set_seed(seed):
 
 # -----------------------------------------------
 
+train_df = pd.read_csv('data/train_df.csv')
+# train_df = pd.read_csv('data/new_train_df.csv')
+val_df = pd.read_csv('data/val_df.csv')
 
-train_df = pd.read_csv('data/train_df_w_info.csv')
-val_df = pd.read_csv('data/val_df_w_info.csv')
+# train_df = pd.read_csv('data/train_df_w_info.csv')
+# val_df = pd.read_csv('data/val_df_w_info.csv')
 
 recommender_configs = [
     # {
@@ -82,20 +86,51 @@ recommender_configs = [
     #     "recommender": NCF_Recommender_GNNemb(
     #         SimpleNamespace(NUM_EPOCHS=8, NEG_PER_USER=20, EMBED_DIM=128, BATCH_SIZE=128, LR=1e-3, SEED=42)
     #     ),
-    # }
+    # },
+    # {
+    #     "name": "Next_Prediction_Recommender",
+    #     "recommender": Next_Prediction_Recommender(
+    #         SimpleNamespace(
+    #             BATCH_SIZE=128,
+    #             EMBED_DIM=128,
+    #             NUM_HEADS=2,
+    #             NUM_LAYERS=1,
+    #             DROPOUT=0.1,
+    #             LR=1e-4,
+    #             NUM_EPOCHS=6,
+    #             MAX_SEQ_LEN=8,
+    #             DECAY_ALPHA=1.0
+    #         )
+    #     ),
+    # },
+    # {
+    #     "name": "Next_Prediction_Recommender",
+    #     "recommender": Next_Prediction_Recommender(
+    #         SimpleNamespace(
+    #             BATCH_SIZE=128,
+    #             EMBED_DIM=256,
+    #             NUM_HEADS=2,
+    #             NUM_LAYERS=2,
+    #             DROPOUT=0.1,
+    #             LR=1e-4,
+    #             NUM_EPOCHS=15,
+    #             MAX_SEQ_LEN=8,
+    #             DECAY_ALPHA=1.0
+    #         )
+    #     ),
+    # },
     {
-        "name": "Next_Prediction_Recommender",
-        "recommender": Next_Prediction_Recommender(
+        "name": "Transformer_Recommender",
+        "recommender": TransformerRecommender(
             SimpleNamespace(
                 BATCH_SIZE=128,
-                EMBED_DIM=128,
-                NUM_HEADS=2,
-                NUM_LAYERS=1,
+                EMBED_DIM=256,
+                NUM_HEADS=8,
+                NUM_LAYERS=5,
                 DROPOUT=0.1,
-                LR=1e-4,
-                NUM_EPOCHS=6,
+                LR=1e-3,
+                NUM_EPOCHS=9,
                 MAX_SEQ_LEN=8,
-                DECAY_ALPHA=1.0
             )
         ),
     }

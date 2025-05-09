@@ -57,6 +57,7 @@ class TransformerNextItemPredictor(nn.Module):
             nn.ReLU(),
             nn.Linear(64, vocab_size)
         )
+        self.attention_weights = []
 
     def forward(self, x):
         positions = torch.arange(x.size(1), device=x.device).unsqueeze(0).expand_as(x)
@@ -65,6 +66,7 @@ class TransformerNextItemPredictor(nn.Module):
         last_hidden = out[:, -1, :]
         return self.fc(self.dropout(last_hidden))
 
+        
 
 class Next_Prediction_Recommender:
     def __init__(self, args):
@@ -111,6 +113,11 @@ class Next_Prediction_Recommender:
         
         return
 
+    def freeze_treatment_embeddings(self):
+        self.model.embedding.weight.requires_grad = False
+        print(f"**Froze** item embedding.")
+        return
+
     def user_item2idx(self, df, user_clm='user_id', item_clm='item'):
         self.user_encoder = LabelEncoder()
         self.item_encoder = LabelEncoder()
@@ -124,6 +131,7 @@ class Next_Prediction_Recommender:
         self.item_clm = item_clm
         self.user2idx = dict(zip(self.user_encoder.classes_, range(len(self.user_encoder.classes_))))
         self.idx2item = dict(enumerate(self.item_encoder.classes_))
+        self.item2idx = {v: k for k, v in self.idx2item.items()}
         return df
 
     # def build_sequences(self, df):
@@ -164,6 +172,7 @@ class Next_Prediction_Recommender:
         self.train_df = train_df
         X, y = self.build_sequences(train_df)
         dataset = SequenceDataset(X, y, self.num_items)
+
         loader = DataLoader(dataset, batch_size=self.args.BATCH_SIZE, shuffle=True)
 
         self.model = TransformerNextItemPredictor(
@@ -174,7 +183,8 @@ class Next_Prediction_Recommender:
             dropout=self.args.DROPOUT
         )
 
-        # self.load_gnn_embeddings(freeze=False)
+        # self.load_gnn_embeddings(freeze=True)
+        self.freeze_treatment_embeddings()
 
         self.model.to(self.device)
 
@@ -199,19 +209,20 @@ class Next_Prediction_Recommender:
                 total_loss += loss.item()
             print(f"Epoch {epoch+1}/{self.args.NUM_EPOCHS} - Loss: {total_loss:.4f}, Normalized: {total_loss/len(loader):.4f}")
 
-    def recommend(self, user_id, history_df, top_k=5):
+    def recommend(self, history_list, top_k=5):
         self.model.eval()
-        user_idx = self.user_encoder.transform([user_id])[0]
-        user_history = history_df[history_df['user_idx'] == user_idx]['item_idx'].tolist()
-        if not user_history:
-            return []
+        history_idx_list = [self.item2idx[treat] for treat in history_list]
 
-        seq_tensor = pad_sequence([torch.tensor(user_history)], batch_first=True).to(self.device)
+        seq_tensor = pad_sequence([torch.tensor(history_idx_list)], batch_first=True).to(self.device)
         with torch.no_grad():
             scores = self.model(seq_tensor)
-            top_k_indices = torch.topk(scores, top_k).indices.squeeze().cpu().numpy()
-            top_k_indices = np.atleast_1d(top_k_indices).tolist()
-            return self.item_encoder.inverse_transform(top_k_indices)
+            probs = torch.softmax(scores, dim=-1).squeeze().cpu().numpy()
+
+        top_k_indices = np.argsort(probs)[-top_k:][::-1]
+        top_k_names = self.item_encoder.inverse_transform(top_k_indices)
+        top_k_scores = probs[top_k_indices]
+
+        return list(zip(top_k_names, top_k_scores))
 
     def evaluate(self, val_df, top_k):
         train_histories = self.train_df.groupby('user_idx')['item_idx'].apply(list).to_dict()

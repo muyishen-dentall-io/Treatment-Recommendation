@@ -1,4 +1,4 @@
 from .data_loader import load_treatment_data, filter_data
 from .data_loader import train_test_split_by_ratio, train_test_split_by_n_year
-from .recommenders import BPR_Recommender, FM_Recommender, NCF_Recommender, NCF_Recommender_GNNemb
-from .recommenders import CF_Recommender, LLM_Recommender, Random_Recommender, Static_Recommender, Next_Prediction_Recommender
+from .recommenders import BPR_Recommender, FM_Recommender, NCF_Recommender, NCF_Recommender_GNNemb, TransformerRecommender
+from .recommenders import CF_Recommender, LLM_Recommender, Random_Recommender, Static_Recommender, Next_Prediction_Recommender, TransformerNextItemPredictor
