@@ -1,0 +1,12 @@
+name: Next_Prediction_Recommender
+recommender_class: Next_Prediction_Recommender
+params:
+  BATCH_SIZE: 128
+  EMBED_DIM: 128
+  NUM_HEADS: 2
+  NUM_LAYERS: 2
+  DROPOUT: 0.1
+  LR: 0.0001
+  NUM_EPOCHS: 9
+  MAX_SEQ_LEN: 8
+  DECAY_ALPHA: 1.0

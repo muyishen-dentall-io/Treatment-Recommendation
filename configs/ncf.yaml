@@ -1,0 +1,8 @@
+name: NCF_Recommender
+recommender_class: NCF_Recommender
+params:
+  NUM_EPOCHS: 5
+  NEG_PER_USER: 20
+  EMBED_DIM: 128
+  BATCH_SIZE: 128
+  LR: 0.001
