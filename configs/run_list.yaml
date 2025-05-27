@@ -1,7 +1,7 @@
 recommenders:
   # - static.yaml
   # - ncf.yaml
-  - ncf_gnnemb.yaml
+  # - ncf_gnnemb.yaml
   # - next_pred.yaml
   # - status.yaml
   # - llm_note.yaml

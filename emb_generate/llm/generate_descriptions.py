@@ -43,6 +43,7 @@ def main():
         descs = get_descriptions(item, client)
         if descs:
             results[item] = descs
+        break
 
     with open(config.DESCRIPTION_OUTPUT_PATH, "w", encoding='utf-8') as f:
         json.dump(results, f, indent=2, ensure_ascii=False)

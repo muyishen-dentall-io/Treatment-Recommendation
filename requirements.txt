@@ -1,0 +1,11 @@
+pandas
+PyYAML
+requests
+tqdm
+openai
+python-dotenv
+ollama
+scikit-learn
+plotly
+torch-geometric
+sentence-transformers

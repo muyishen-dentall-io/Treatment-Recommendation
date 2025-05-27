@@ -14,20 +14,12 @@ def embed_with_sbert(data):
         emb_list = []
         for desc in desc_list:
             emb = model.encode('passage: ' + treat + ' ' + desc).tolist()
-            emb_list.append(emb)
+            emb_list.append(emb[:config.OUT_DIM])
             all_emb.append(emb)
         description_emb_dict[treat] = emb_list
 
-    if all_emb:
-        embeddings_np = np.array(all_emb)
-        pca = PCA(n_components=config.OUT_DIM)
-        pca.fit(embeddings_np)
-        for treat, emb_list in tqdm(description_emb_dict.items(), desc="SBERT: Applying PCA"):
-            for i in range(len(emb_list)):
-                emb_list[i] = pca.transform(np.expand_dims(emb_list[i], axis=0)).squeeze().tolist()
-        print(f"SBERT embeddings generated and reduced to {config.OUT_DIM} dimensions.")
-    else:
-        print("No embeddings generated.")
+    print(f"SBERT embeddings generated and reduced to {config.OUT_DIM} dimensions.")
+    
     return description_emb_dict
 
 def embed_with_openai(data):
@@ -51,7 +43,7 @@ def embed_with_openai(data):
                 emb = response.data[0].embedding[:config.OUT_DIM]
                 emb_list.append(emb)
             except Exception as e:
-                print(f"❌ OpenAI error for '{treat}': {e}")
+                print(f"OpenAI error for '{treat}': {e}")
                 emb_list.append([0.0]*config.OUT_DIM)
         description_emb_dict[treat] = emb_list
     print("OpenAI embeddings generated (dim=config.OUT_DIM).")

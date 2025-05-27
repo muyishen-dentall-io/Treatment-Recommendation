@@ -120,7 +120,7 @@ class LLM_Recommender:
 
         for user_id, group in tqdm(val_df.groupby(self.user_clm)):
 
-            # if total_users > 5:
+            # if total_users > 2:
             #     break
 
             if user_id not in self.user2idx:
@@ -225,7 +225,7 @@ class LLM_Recommender:
 
         elif self.mode == "note":
             user_id = self.idx2user[user_idx]
-            conn = sqlite3.connect("clinic_info.db")
+            conn = sqlite3.connect("./data/clinic_data.db")
             df = pd.read_sql_query(
                 """
                 SELECT doctor_comment
@@ -245,7 +245,7 @@ class LLM_Recommender:
 
         elif self.mode == "all":
             user_id = self.idx2user[user_idx]
-            conn = sqlite3.connect("clinic_info.db")
+            conn = sqlite3.connect("./data/clinic_data.db")
             df = pd.read_sql_query(
                 """
                 SELECT doctor_comment
