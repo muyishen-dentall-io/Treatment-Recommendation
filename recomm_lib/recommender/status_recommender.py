@@ -145,7 +145,13 @@ class Status_Recommender:
         with open(path, "r") as f:
             raw_embeddings = json.load(f)
 
-        self.n_desc = 5
+        treatment_name_list =  list(raw_embeddings.keys())
+
+        if treatment_name_list:
+            self.n_desc = len(raw_embeddings[treatment_name_list[0]])
+        
+        else:
+            self.n_desc = 1
 
         self.embedding_bank = torch.zeros((self.num_items, self.n_desc, self.args.EMBED_DIM), device=self.device)
         for item, emb_list in raw_embeddings.items():

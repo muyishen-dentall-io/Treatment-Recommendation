@@ -6,24 +6,18 @@ There are two main approaches provided:
 - **Graph Neural Network (GNN) embeddings** for capturing treatment co-occurrence relationships.
 - **Large Language Model (LLM) embeddings** for capturing semantic similarity between treatment descriptions.
 
-## Folder Structure
+---
 
-```
-emb_generate/
-├── gnn/
-│   ├── gnn_lib/
-│   │   ├── dataset.py
-│   │   ├── init.py
-│   │   ├── model.py
-│   │   ├── train.py
-│   │   ├── utils.py
-│   │   └── visualize.py
-│   └── run_gnn.py
-└── llm/
-    ├── config.py
-    ├── generate_descriptions.py
-    └── generate_embeddings.py
-```
+**Embedding Output Format**
+
+- All generated embeddings are saved in JSON format:
+    - For GNN: The JSON maps each treatment name to its embedding vector.
+    - For LLM: The JSON maps each treatment name to a list of embedding vectors (if `N_DESCRIPTIONS` in `config.py` is greater than 1).
+
+> **Note:** By default, the NCF_GNN Recommender and Status Recommender will automatically search for their respective embedding files in these folders (`emb_generate/gnn` for GNN embeddings and `emb_generate/llm` for LLM embeddings).  
+
+> Please ensure that the embeddings are correctly generated and available in the appropriate directory for your chosen model to function properly.
+
 ---
 
 ## GNN Embeddings
