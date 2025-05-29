@@ -56,7 +56,7 @@ def main():
         "--method",
         choices=["sbert", "openai"],
         default="sbert",
-        help="Which embedding method to use: 'sbert' for SentenceTransformer + PCA, 'openai' for OpenAI API (default: sbert)"
+        help="Which embedding method to use: 'sbert' for SentenceTransformer, 'openai' for OpenAI API (default: sbert)"
     )
     args = parser.parse_args()
 

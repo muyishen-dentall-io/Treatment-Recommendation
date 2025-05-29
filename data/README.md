@@ -25,6 +25,17 @@ This folder contains all the data files required or generated for training and e
 *(For `clinic_data.db`, you can explore its content using DB Browser for SQLite or any database client.)*
 
 
+## Provided Dataset Details
+
+The dataset provided in this repository consists of:
+
+- **Training set:** 90,912 treatment records (`train_df.csv`)
+- **Validation set:** 16,733 treatment records (`val_df.csv`)
+
+The dataset is split at the **patient level**:  
+For each patient, all treatment records from their **last year** of history are assigned to the validation set (`val_df.csv`). The remaining earlier records are used for training (`train_df.csv`). This simulates a real-world scenario where, given a patient’s historical treatments, we predict which treatments they are likely to receive in the following year.
+
+
 ## Data Processing Workflow
 
 The first two files (`item_list.txt` and `predict_prompt.txt`) are the only files that should **originally** be in this folder.  
